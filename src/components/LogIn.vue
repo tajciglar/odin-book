@@ -5,9 +5,9 @@
       <form @submit.prevent="handleLogin">
         <div class="mb-4">
           <input 
-            v-model="username" 
-            type="text" 
-            placeholder="Username" 
+            v-model="email" 
+            type="email" 
+            placeholder="Email" 
             class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -30,18 +30,13 @@
   </div>
 </template>
 
-<script>
-export default {
-    data(){
-        return (
-            username: '', 
-            password: '',
-        );
-    },
-    method: {
-        handleLogin() {
-            console.log(this.username, this.password)
-        } 
+<script setup lang="ts">
+    import { ref } from 'vue';
+
+    const email = ref('');
+    const password = ref('');
+
+    const handleLogin = () => {
+      console.log(email.value, password.value)
     }
-}
 </script>
