@@ -1,4 +1,5 @@
 <template>
+  <Header></Header>
   <div class="flex items-center justify-center min-h-screen bg-gray-100">
     <div class="bg-white p-8 rounded-lg shadow-lg w-96">
       <h1 class="text-2xl font-semibold text-center text-gray-700 mb-6">Login</h1>
@@ -28,15 +29,18 @@
       </form>
     </div>
   </div>
+  <Footer></Footer>
 </template>
 
 <script setup lang="ts">
     import { ref } from 'vue';
-
+    import Header from './Header.vue'
+    import Footer from './Footer.vue'
     const email = ref('');
     const password = ref('');
 
     const handleLogin = () => {
       console.log(email.value, password.value)
     }
+    
 </script>
