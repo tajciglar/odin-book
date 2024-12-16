@@ -1,5 +1,6 @@
 function LogIn(req, res) {
-    res.send("logged in")
+  console.log(req.body); 
+  res.json({ message: 'Login successful' });
 }
 
 module.exports = {
