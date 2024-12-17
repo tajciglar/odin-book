@@ -1,6 +1,9 @@
 <template>
   <div>
     <p>Homepage</p>
+    <div>
+      
+    </div>
   </div>
 </template>
 
