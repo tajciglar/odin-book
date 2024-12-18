@@ -28,14 +28,11 @@
       </form>
     </div>
   </div>
-  <Footer></Footer>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import Footer from './Footer.vue';
-
 
 
 const email = ref('');

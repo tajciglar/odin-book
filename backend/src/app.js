@@ -1,13 +1,15 @@
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
+import  express  from 'express';
+import cors from 'cors';
+import  bodyParser  from 'body-parser';
 
-const userRoutes = require('./routes/userRoutes');
-require('dotenv').config();
+import  userRoutes from './routes/userRoutes.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
 
 app.use(cors());
+
 app.use(bodyParser.json());
 
 app.use('/api', userRoutes);
@@ -21,4 +23,4 @@ app.listen(3000, () => {
     console.log('Server running on port 3000');
 });
 
-module.exports = app;
+export default app;

@@ -74,26 +74,25 @@ const handleSignup = async () => {
 
   loading.value = true;
   try {
-    const payload = {
-      username: username.value,
-      email: email.value,
-      password: password.value,
-    };
-    console.log(payload)
     // API CALL
     const response = await fetch('http://localhost:3000/api/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ payload }),
+      body: JSON.stringify({ 
+        username: username.value,
+        email: email.value,
+        password: password.value, 
+        confirm_password: confirmPassword.value,
+    }),
     })
     console.log(response)
     if (!response.ok) {
       console.log("Error: ", response)
     }
     // Redirect to homepage
-    router.push({name: 'Homepage'})
+    router.push({name: 'Login'})
 
   } catch (err) {
     console.error("Error during signup:", err);

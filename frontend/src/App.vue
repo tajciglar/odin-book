@@ -1,7 +1,11 @@
-<script setup lang="ts">
-</script>
-
 <template>
-  <router-view></router-view>
+  <div id="app">
+    <router-view />
+    <Footer />   
+  </div>
 </template>
 
+<script setup>
+import Footer from './components/Footer.vue';
+
+</script>
