@@ -26,6 +26,7 @@
           Login
         </button>
       </form>
+      <div class="mt-3">Don't have an account? Sign up <a href="/signup">here</a></div>
     </div>
   </div>
 </template>
@@ -33,7 +34,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-
 
 const email = ref('');
 const password = ref('');
@@ -47,6 +47,7 @@ const handleLogin = async () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ email: email.value, password: password.value }), 
+      credentials: 'include', 
     });
 
     if (!response.ok) {
@@ -54,10 +55,13 @@ const handleLogin = async () => {
     }
 
     const data = await response.json(); 
-    alert(data.message)
-    router.push({name: 'Homepage'})
+    alert(data.message); 
+
+    // Redirect to homepage
+    router.push({ name: 'Homepage' });
   } catch (error) {
     console.error('Error during login:', error);
+    alert('Login failed. Please try again.'); 
   }
 };
 </script>

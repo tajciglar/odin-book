@@ -47,6 +47,7 @@
           Sign Up
         </button>
       </form>
+      <div class="mt-3">Already have an account? Log in <a href="/login">here</a></div>
     </div>
   </div>
 </template>
@@ -56,6 +57,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+
 // Form fields
 const username = ref('');
 const email = ref('');

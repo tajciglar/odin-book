@@ -74,7 +74,7 @@ model Chat {
   id           Int               @id @default(autoincrement())
   createdAt    DateTime          @default(now())
   messages     Message[]
-  participants ChatParticipant[] // Many-to-many relation with User via ChatParticipant
+  participants ChatParticipant[]
 }
 
 model Message {
