@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import LogIn from './components/LogIn.vue';
 import SingUp from './components/SingUp.vue';
-import Homepage from './components/Homepage.vue'
+import Homepage from './components/Homepage/Homepage.vue';
 import axios from 'axios';
 
 
