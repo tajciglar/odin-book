@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { body, validationResult } from 'express-validator';
-import bcryptjs from 'bcryptjs';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 const jwtSecret = process.env.JWT_SECRET;
 const prisma = new PrismaClient();
@@ -47,7 +47,7 @@ async function SignUp(req, res) {
         }
 
         // Hash the password
-        const hashedPassword = await bcryptjs.hash(userData.password, 10);
+        const hashedPassword = await bcrypt.hash(userData.password, 10);
 
         // Create the user in the database
         const newUser = await prisma.user.create({
@@ -71,7 +71,7 @@ async function SignUp(req, res) {
 // LogIn function
 async function LogIn(req, res) {
     const { email, password } = req.body;
-
+    console.log(email, password)
     try {
         // Find the user by email
         const user = await prisma.user.findUnique({
@@ -80,12 +80,14 @@ async function LogIn(req, res) {
             },
         });
 
+
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-
+        console.log(password, user.password)
         // Check if the password is correct
-        const isPasswordValid = await bcryptjs.compare(password, user.password);
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        console.log(isPasswordValid)
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
