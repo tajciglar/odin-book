@@ -3,6 +3,9 @@
     <div class="bg-white p-8 rounded-lg shadow-lg w-96">
       <h1 class="text-2xl font-semibold text-center text-gray-700 mb-6">Sign Up</h1>
       <form @submit.prevent="handleSignup">
+        <div v-if="errorMessage" class="mb-4 text-red-600 text-center">
+          {{ errorMessage }}
+        </div>
         <div class="mb-4">
           <input 
             v-model="username" 
@@ -47,7 +50,7 @@
           Sign Up
         </button>
       </form>
-      <div class="mt-3">Already have an account? Log in <a href="/login">here</a></div>
+      <div class="mt-3">Already have an account? Log in <a href="/login" class="text-blue-600 hover:underline">here</a>.</div>
     </div>
   </div>
 </template>
@@ -58,47 +61,55 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-// Form fields
 const username = ref('');
 const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
+const errorMessage = ref('');
 
-// Loading state
 const loading = ref(false);
 
-// Signup handler
 const handleSignup = async () => {
   if (password.value !== confirmPassword.value) {
-    alert("Passwords do not match!");
+    console.log(password.value, confirmPassword.value)
+    errorMessage.value = "Passwords do not match!";
     return;
   }
 
   loading.value = true;
+  errorMessage.value = ''; 
+
   try {
-    // API CALL
     const response = await fetch('http://localhost:3000/api/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         username: username.value,
         email: email.value,
-        password: password.value, 
+        password: password.value,
         confirm_password: confirmPassword.value,
-    }),
-    })
-    console.log(response)
+      }),
+    });
+
+    const data = await response.json();
+
     if (!response.ok) {
-      console.log("Error: ", response)
+      if (data.errors) {
+        errorMessage.value = data.errors.map((err: { msg: string }) => err.msg).join(', ');
+      } else if (data.message) {
+        errorMessage.value = data.message;
+      }
+      return; // Stop further processing on error
     }
-    // Redirect to homepage
-    router.push({name: 'Login'})
+
+    alert(data.message || 'Signup successful!');
+    router.push({ name: 'Login' }); // Redirect to login page
 
   } catch (err) {
     console.error("Error during signup:", err);
-    alert("Signup failed. Please try again.");
+    errorMessage.value = "Signup failed. Please try again.";
   } finally {
     loading.value = false;
   }

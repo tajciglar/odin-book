@@ -5,10 +5,10 @@ import jwt from 'jsonwebtoken';
 const jwtSecret = process.env.JWT_SECRET;
 const prisma = new PrismaClient();
 
+
 // SignUp function
 async function SignUp(req, res) {
     const userData = req.body;
-    console.log(req)
     
     // Input validation
     await body('email').isEmail().withMessage('Must be a valid email').run(req);
@@ -17,16 +17,17 @@ async function SignUp(req, res) {
         .withMessage('Password must be at least 6 characters long')
         .run(req);
     await body('confirm_password')
-        .custom((value, { req }) => {
-            if (value !== req.body.password) {
-                throw new Error('Passwords do not match');
-            }
-            return true;
-        })
-        .run(req);
+    .custom((value, { req }) => {
+        if (value !== req.body.password) {
+            console.log(value)
+            throw new Error('Passwords do not match');
+        }
+        return true;
+    })
+    .run(req);
 
     const errors = validationResult(req);
-    console.log(errors)
+
     // Send back validation errors
     if (!errors.isEmpty()) {
         return res.status(400).json({
@@ -36,15 +37,16 @@ async function SignUp(req, res) {
 
     try {
         // Check if the user already exists
+        
         const emailExists = await prisma.user.findUnique({
             where: {
                 email: userData.email,
             },
         });
-        console.log(emailExists)
+       
         if (emailExists) {
             return res.status(400).json({ message: 'User with this email already exists' });
-        }
+        };
 
         // Hash the password
         const hashedPassword = await bcrypt.hash(userData.password, 10);
@@ -57,7 +59,7 @@ async function SignUp(req, res) {
                 password: hashedPassword,
             },
         });
-
+        
         return res.status(201).json({
             message: 'User created successfully',
             user: { id: newUser.id, email: newUser.email }, 
@@ -84,7 +86,8 @@ async function LogIn(req, res) {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        console.log(password, user.password)
+       
+
         // Check if the password is correct
         const isPasswordValid = await bcrypt.compare(password, user.password);
         console.log(isPasswordValid)

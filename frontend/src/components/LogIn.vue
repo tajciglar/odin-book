@@ -3,6 +3,9 @@
     <div class="bg-white p-8 rounded-lg shadow-lg w-96">
       <h1 class="text-2xl font-semibold text-center text-gray-700 mb-6">Login</h1>
       <form @submit.prevent="handleLogin">
+        <div v-if="errorMessage" class="mb-4 text-red-600 text-center">
+          {{ errorMessage }}
+        </div>
         <div class="mb-4">
           <input 
             v-model="email" 
@@ -37,6 +40,9 @@ import { useRouter } from 'vue-router';
 
 const email = ref('');
 const password = ref('');
+const errorMessage = ref('');
+const errors = ref('')
+
 const router = useRouter();
 
 const handleLogin = async () => {
@@ -49,8 +55,15 @@ const handleLogin = async () => {
       body: JSON.stringify({ email: email.value, password: password.value }), 
       credentials: 'include', 
     });
-
+  
     if (!response.ok) {
+      const errors = await response.json();
+      
+      if (errors.message) {
+        console.log(errors.message);
+        errorMessage.value = errors.message; 
+      }
+      console.log(errors)
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
@@ -60,7 +73,10 @@ const handleLogin = async () => {
     // Redirect to homepage
     router.push({ name: 'Homepage' });
   } catch (error) {
-    console.error('Error during login:', error);
+    
+    if (!errorMessage.value) {
+      errorMessage.value = 'Login failed. Please try again.'; 
+    }
     alert('Login failed. Please try again.'); 
   }
 };
