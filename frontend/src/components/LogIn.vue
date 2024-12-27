@@ -41,7 +41,6 @@ import { useRouter } from 'vue-router';
 const email = ref('');
 const password = ref('');
 const errorMessage = ref('');
-const errors = ref('')
 
 const router = useRouter();
 
@@ -71,7 +70,7 @@ const handleLogin = async () => {
     alert(data.message); 
 
     // Redirect to homepage
-    router.push({ name: 'Homepage' });
+    router.push({ name: 'MainContent' });
   } catch (error) {
     
     if (!errorMessage.value) {

@@ -1,7 +1,7 @@
 import  express  from 'express';
 import cors from 'cors';
 import  bodyParser  from 'body-parser';
-import  userRoutes from './routes/userRoutes.js';
+import  userRoutes from './routes/authRoutes.js';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser'
 

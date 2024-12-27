@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full bg-lightBeige text-white flex flex-col">
+  <div class=" bg-lightBeige text-white flex flex-col">
     <ul class="space-y-4 mt-8 px-4">
       <li>
         <button class="flex items-center p-3 w-full rounded-lg hover:bg-gray-700 cursor-pointer" aria-label="Go to Home">

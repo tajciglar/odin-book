@@ -17,7 +17,7 @@
     </div>
 
     <div class="flex items-center space-x-6">
-      <a href="#" class="hover:text-warmBeige">User</a>
+      <a href="/profile" class="hover:text-warmBeige">User</a>
       <div class="relative">
         <button class="bg-white text-forestGreen px-4 py-2 rounded hover:bg-warmBeige">
           Notifications

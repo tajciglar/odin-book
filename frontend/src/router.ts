@@ -1,16 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import LogIn from './components/LogIn.vue';
 import SingUp from './components/SingUp.vue';
-import Homepage from './components/Homepage/Homepage.vue';
+import MainContent from './pages/MainContent.vue';
+import ProfilePage from './pages/ProfilePage.vue'
 import axios from 'axios';
+import DefaultLayout from './layouts/DefaultLayout.vue';
 
 
 const routes = [
   {
     path: '/',
-    name: 'Homepage',
-    component: Homepage,
+    name: 'Maincontent',
+    component: DefaultLayout,
     meta: { requiresAuth: true},
+    children: [
+      { path: '', name: 'MainContent', component: MainContent},
+      { path: 'profile', name: 'Profile', component: ProfilePage},
+      //{ path: 'settings', name: 'Settings', component: Settings}
+    ]
   },
   {
     path: '/login',
@@ -21,7 +28,7 @@ const routes = [
     path: '/signup',
     name: 'Signup',
     component: SingUp,
-  }
+  },
 ];
 
 const router = createRouter({
