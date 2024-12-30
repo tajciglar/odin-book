@@ -90,7 +90,7 @@ async function LogIn(req, res) {
 
         // Check if the password is correct
         const isPasswordValid = await bcrypt.compare(password, user.password);
-        console.log(isPasswordValid)
+        
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
@@ -98,6 +98,7 @@ async function LogIn(req, res) {
         // Return a success response + generate token
         const token = jwt.sign({id: user.id, username: user.username}, jwtSecret, { expiresIn: '1h' });
 
+        // set token in cookie
         res.cookie('authToken', token, {
             httpOnly: true,
             secure: false,
