@@ -47,6 +47,7 @@ router.beforeEach(async (to, _from, next) => {
       const response = await axios.get<UserResponse>('http://localhost:3000/auth-status', {
         withCredentials: true,
       });
+      
       if (response.data.loggedIn) {
         next(); 
       } else {

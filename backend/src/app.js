@@ -28,9 +28,7 @@ app.use('/api/users', userRoutes);
 
 app.get('/auth-status', authenticate, (req, res, next) => {
     try {
-        console.log('Token processed:', req.cookies.authToken);
         if (req.user) {
-            console.log('User:', req.user);
             res.json({ loggedIn: true, username: req.user.username });
         } else {
             res.json({ loggedIn: false });
