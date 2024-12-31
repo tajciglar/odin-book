@@ -59,7 +59,6 @@ const handleLogin = async () => {
       const errors = await response.json();
       
       if (errors.message) {
-        console.log(errors.message);
         errorMessage.value = errors.message; 
       }
       console.log(errors)

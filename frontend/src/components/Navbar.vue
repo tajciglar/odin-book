@@ -22,24 +22,29 @@
         <button class="bg-white text-forestGreen px-4 py-2 rounded hover:bg-warmBeige">
           Notifications
         </button>
-        <div
-          class="absolute right-0 mt-2 w-48 bg-white text-black rounded shadow-lg hidden group-hover:block"
-        >
-          <a href="#" class="block px-4 py-2 hover:bg-warmBeige">Notification 1</a>
-          <a href="#" class="block px-4 py-2 hover:bg-warmBeige">Notification 2</a>
-        </div>
+      </div>
+      <div class="text-xl font-bold">
+        <button 
+          type="button" 
+          class="hover:text-warmBeige bg-transparent" 
+          @click="handleLogOut">
+          Log out
+        </button>
       </div>
     </div>
   </div>
 </div>
 </template>
 
-<script>
-export default {
-
-}
+<script setup>
+  import axios from 'axios';
+  const handleLogOut = async () => {
+    console.log("in")
+    try {
+      await axios.post('http://localhost:3000/logout', {}, { withCredentials: true });
+      window.location.href = '/login';
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  }
 </script>
-
-<style>
-
-</style>

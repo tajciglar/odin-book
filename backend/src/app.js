@@ -40,6 +40,16 @@ app.get('/auth-status', authenticate, (req, res, next) => {
     }
 });
 
+app.post('/logout', (req, res) => {
+    res.clearCookie('authToken', {
+        httpOnly: true, 
+        secure: false, 
+        sameSite: 'strict', 
+    });
+
+    res.status(200).json({ message: 'Logged out successfully' });
+});
+
 app.use((err, req, res, next) => {
     console.error('Error:', err.message);
     res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });

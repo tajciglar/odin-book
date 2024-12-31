@@ -73,7 +73,7 @@ async function SignUp(req, res) {
 // LogIn function
 async function LogIn(req, res) {
     const { email, password } = req.body;
-    console.log(email, password)
+
     try {
         // Find the user by email
         const user = await prisma.user.findUnique({
@@ -112,6 +112,7 @@ async function LogIn(req, res) {
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
+
 
 
 
