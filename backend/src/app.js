@@ -12,6 +12,8 @@ dotenv.config();
 
 const app = express();
 
+
+// CORS settings
 const corsOptions = {
     origin: process.env.FRONTEND_URL || 'http://localhost:5173',
     credentials: true,
@@ -19,13 +21,16 @@ const corsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
+// Server settings
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(bodyParser.json());
 
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 
+// Define other routes
 app.get('/auth-status', authenticate, (req, res, next) => {
     try {
         if (req.user) {
@@ -40,9 +45,9 @@ app.get('/auth-status', authenticate, (req, res, next) => {
 
 app.post('/logout', (req, res) => {
     res.clearCookie('authToken', {
-        httpOnly: true, 
-        secure: false, 
-        sameSite: 'strict', 
+        httpOnly: true,
+        secure: false,
+        sameSite: 'strict',
     });
 
     res.status(200).json({ message: 'Logged out successfully' });

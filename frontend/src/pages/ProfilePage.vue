@@ -5,18 +5,17 @@
             <p>Profile picture:</p>
             <div>
                 <img :src="userInfo.profilePicture" alt="Profile Picture" v-if="!editingProfilePic" />
-                <div v-if="editingProfilePic">
-                    <input type="file" @change="handleProfilePicChange" />
-                </div>
                 <button v-if="!editingProfilePic" type="button" @click="toggleEdit('profilePic')">Edit</button>
                 <div v-if="editingProfilePic">
-                    <button type="button" @click="submitProfilePic">Submit</button>
+                    <form @submit.prevent="submitProfilePic">
+                        <input type="file" @change="handleProfilePicChange" />
+                        <button type="submit">Submit</button>
+                    </form>
                     <button type="button" @click="toggleEdit('profilePic')">Cancel</button>
                 </div>
             </div>
         </div>
 
-        <!-- Bio Section -->
         <div>
             <p>Bio:</p>
             <div v-if="!editingBio">
@@ -38,6 +37,7 @@ import axios from 'axios';
 
 const userInfo = ref({
     profilePicture: '',
+    profilePictureFile: '',
     bio: ''
 });
 const editingProfilePic = ref(false);
@@ -70,14 +70,15 @@ const handleProfilePicChange = (event) => {
     const file = event.target.files[0];
     if (file) {
         userInfo.value.profilePicture = URL.createObjectURL(file);
+        userInfo.value.profilePictureFile = file;
     }
 };
 
 const submitProfilePic = async () => {
     try {
         const formData = new FormData();
-        formData.append('profilePicture', userInfo.value.profilePicture);
-
+        formData.append('profilePicture', userInfo.value.profilePictureFile);
+        console.log(formData.profilePicture)
         await axios.post('http://localhost:3000/api/users/update-profile-pic', formData, {
             withCredentials: true,
         });
