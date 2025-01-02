@@ -14,7 +14,7 @@ const getUser = async (req, res) => {
 
         // Verify and decode the token
         const decodedToken = jwt.verify(authToken, SECRET_KEY);
-        const { id } = decodedToken; // Include both
+        const { id } = decodedToken;
 
         const userData = await prisma.user.findUnique({
             where: {
@@ -38,19 +38,51 @@ const getUser = async (req, res) => {
     }
 };
 
-const updateProfilePic = (req, res) => {
-    console.log("file",req.file.path); 
-    res.status(200).json({ message: 'Profile picture updated successfully', file: req.file });
+const updateProfilePic = async (req, res) => {
+    try {
+        const { authToken } = req.cookies;
+
+        if (!authToken) {
+            return res.status(401).json({ message: 'Authentication token missing' });
+        }
+
+        const decodedToken = jwt.verify(authToken, process.env.JWT_SECRET);
+        const { id } = decodedToken;
+
+        const profilePicUrl = `/uploads/${req.file.filename}`;
+
+        const updatedUser = await prisma.user.update({
+            where: { id },
+            data: { avatarUrl: profilePicUrl },
+        });
+
+        res.status(200).json({
+            message: 'Profile picture updated successfully',
+            profilePicUrl,
+        });
+    } catch (error) {
+        console.error('Error updating profile picture:', error.message);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
 };
 
+
 const updateBio = async (req, res) => {
+    const { authToken } = req.cookies;
+
+        if (!authToken) {
+            return res.status(401).json({ message: 'Authentication token missing' });
+        }
+
+        const decodedToken = jwt.verify(authToken, process.env.JWT_SECRET);
+        const { id } = decodedToken;
+        const bio = req.body.bio;
+    
     try {
-        // Handle the bio update logic here
-        console.log(req.body);  // Assuming the bio data is in the request body
-        // Update the bio in the database
+        
         const updatedUser = await prisma.user.update({
-            where: { id: req.user.id }, // You will need to extract user ID from JWT or session
-            data: { bio: req.body.bio },
+            where: { id: id }, // You will need to extract user ID from JWT or session
+            data: { bio: bio },
         });
 
         res.status(200).json({ message: 'Bio updated successfully', updatedUser });
