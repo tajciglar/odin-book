@@ -11,7 +11,7 @@
       </ul>
     </div>
 
-    <ActiveFriendsBar class="col-span-1 bg-gray-200 p-4 overflow-y-auto" />
+    <ActiveFriendsBar class="col-span-1 bg-gray-200 overflow-y-auto" />
   </div>
 </template>
 
@@ -21,6 +21,7 @@
   import ActiveFriendsBar from '../components/ActiveFriendsBar.vue';
   import axios from 'axios';
 
+ 
   interface FetchedPosts {
     title: string, 
     content: string,
@@ -28,11 +29,22 @@
   }
 
 
+
+
   const fetchPosts = async (): Promise<void> => {
     try {
-      const response = await axios.get('')
+      const response  = await axios.get(`$(VITE_BACKEND_URL)/api/users/posts`, {
+        withCredentials: true,
+      })
+
+      if(!response) {
+
+      }
+      const posts: FetchedPosts = response.data;
+    } catch (err) {
+      console.error(err)
     }
-  }
+  } 
  onMounted(() => {
   fetchPosts();
 });
