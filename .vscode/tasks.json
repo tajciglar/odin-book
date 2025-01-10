@@ -1,0 +1,21 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "dev",
+			"path": "backend",
+			"problemMatcher": [],
+			"label": "npm: dev - backend",
+			"detail": "nodemon src/app.js"
+		},
+		{
+			"type": "npm",
+			"script": "start",
+			"path": "backend",
+			"problemMatcher": [],
+			"label": "npm: start - backend",
+			"detail": "node src/app.js"
+		}
+	]
+}

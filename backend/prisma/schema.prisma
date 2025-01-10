@@ -14,6 +14,7 @@ model User {
   password  String
   bio       String?
   avatarUrl String?
+  active    Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -23,6 +24,9 @@ model User {
   chats    ChatParticipant[]
 
   likes Like[]
+
+  friends  User[] @relation("UserFriends")
+  friendOf User[] @relation("UserFriends")
 }
 
 model Post {

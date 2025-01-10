@@ -1,10 +1,8 @@
 <template>
   <div class=" mx-auto p-6 bg-white shadow-md rounded-lg space-y-8 w-3/6">
-    <!-- Profile Picture Section -->
     <div class="space-y-4">
       <h2 class="text-lg font-bold">Profile Picture</h2>
       <div class="flex items-center space-x-4">
-        <!-- Display Profile Picture or Placeholder -->
         <img
           :src="userInfo.profilePicture || 'https://via.placeholder.com/150'"
           class="w-24 h-24 rounded-full object-cover border"
@@ -33,7 +31,6 @@
           </form>
         </div>
 
-        <!-- Edit Button -->
         <button
           v-if="!editingProfilePic"
           class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
@@ -52,8 +49,7 @@
         </button>
       </div>
     </div>
-
-    <!-- Bio Section -->
+    
     <div class="space-y-4">
       <h2 class="text-lg font-bold">Bio</h2>
       <div v-if="!editingBio" >
@@ -110,7 +106,7 @@ const fetchUserData = async () => {
     const response = await axios.get("http://localhost:3000/api/users/profile", {
       withCredentials: true,
     });
-
+    console.log(response.data)
     userInfo.value = response.data.userData;
   } catch (error) {
     console.error("Error fetching user data:", error);

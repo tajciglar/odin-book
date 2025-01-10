@@ -1,5 +1,5 @@
 import express from 'express';
-import { getUser, updateProfilePic, updateBio } from '../controllers/userController.js';
+import { getUser, updateProfilePic, updateBio, getFriends } from '../controllers/userController.js';
 import multer from 'multer';
 import path from 'path';
 const router = express.Router();
@@ -24,7 +24,7 @@ const upload = multer({
             cb(new Error('Invalid file type. Only JPEG and PNG are allowed.'));
         }
     },
-    limits: { fileSize: 2 * 1024 * 1024 }, // 2 MB
+    limits: { fileSize: 2 * 1024 * 1024 },
 });
 
 
@@ -36,5 +36,7 @@ router.post('/update-profile-pic', upload.single('profilePicture'), updateProfil
 
 // Route for updating bio
 router.post('/update-bio', updateBio);
+
+router.get('/friends', getFriends);
 
 export default router;

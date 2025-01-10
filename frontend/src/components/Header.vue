@@ -14,9 +14,5 @@
 </template>
 
 <script setup lang="ts">
-  // You can add any script logic here if needed
+  
 </script>
-
-<style scoped>
-/* Add any custom styles here */
-</style>
