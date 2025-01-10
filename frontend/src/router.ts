@@ -16,7 +16,6 @@ const routes = [
     children: [
       { path: '', name: 'MainContent', component: MainContent},
       { path: 'profile', name: 'Profile', component: ProfilePage},
-      //{ path: 'settings', name: 'Settings', component: Settings}
     ]
   },
   {
