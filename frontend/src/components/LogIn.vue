@@ -38,13 +38,22 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-const email = ref('');
-const password = ref('');
-const errorMessage = ref('');
+interface LoginResponse {
+  message: string,
+  token?: string,
+}
+
+interface LoginError {
+  message: string,
+}
+
+const email = ref<string>('');
+const password = ref<string>('');
+const errorMessage = ref<string>('');
 
 const router = useRouter();
 
-const handleLogin = async () => {
+const handleLogin = async (): Promise<void> => {
   try {
     const response = await fetch('http://localhost:3000/api/auth/login', { 
       method: 'POST',
@@ -56,7 +65,7 @@ const handleLogin = async () => {
     });
   
     if (!response.ok) {
-      const errors = await response.json();
+      const errors: LoginError = await response.json();
       
       if (errors.message) {
         errorMessage.value = errors.message; 
@@ -65,8 +74,8 @@ const handleLogin = async () => {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    const data = await response.json(); 
-    alert(data.message); 
+    const loginData: LoginResponse = await response.json(); 
+    console.log(loginData.message) 
 
     // Redirect to homepage
     router.push({ name: 'MainContent' });

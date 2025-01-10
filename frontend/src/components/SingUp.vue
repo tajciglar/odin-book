@@ -61,17 +61,21 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-const username = ref('');
-const email = ref('');
-const password = ref('');
-const confirmPassword = ref('');
-const errorMessage = ref('');
 
-const loading = ref(false);
+interface SignUpResponse {
+  message: string,
+  errors: Array<{ msg: string }> | null,
+}
+const username = ref<string>('');
+const email = ref<string>('');
+const password = ref<string>('');
+const confirmPassword = ref<string>('');
+const errorMessage = ref<string>('');
 
-const handleSignup = async () => {
+const loading = ref<boolean>(false);
+
+const handleSignup = async (): Promise<void> => {
   if (password.value !== confirmPassword.value) {
-    console.log(password.value, confirmPassword.value)
     errorMessage.value = "Passwords do not match!";
     return;
   }
@@ -93,7 +97,7 @@ const handleSignup = async () => {
       }),
     });
 
-    const data = await response.json();
+    const data: SignUpResponse = await response.json();
 
     if (!response.ok) {
       if (data.errors) {
@@ -104,7 +108,6 @@ const handleSignup = async () => {
       return; // Stop further processing on error
     }
 
-    alert(data.message || 'Signup successful!');
     router.push({ name: 'Login' }); // Redirect to login page
 
   } catch (err) {
