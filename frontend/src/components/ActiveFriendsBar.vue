@@ -7,7 +7,7 @@
         <li
           v-for="friend in activeFriends"
           :key="friend.id"
-          @click="selectFriend(friend)"
+          @click="$emit('select-friend', friend)"
           class="flex items-center justify-between cursor-pointer p-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:bg-gray-100 hover:shadow-md transition duration-300"
         >
           <span class="text-sm font-medium text-gray-700">{{ friend.username }}</span>
@@ -29,47 +29,33 @@
       </ul>
       <p v-else class="text-gray-600 text-sm italic">No active friends found.</p>
     </div>
-
-    <!-- Message Section -->
-    <div 
-      class="fixed bottom-0 right-0 w-1/3 bg-white text-black p-4 shadow-lg rounded-t-lg border border-gray-300  transition-all ease-in-out duration-1000 "
-      :class="{ 'translate-y-0': selectedFriend }"
-      v-if="selectedFriend"
-    >
-      <h3 class="text-lg font-bold">{{ selectedFriend.username }}</h3>
-      <div class="border border-gray-300 p-4 h-64 overflow-y-auto">
-        <p v-for="(msg, index) in messages" :key="index">{{ msg }}</p>
-      </div>
-      <div class="mt-4">
-        <input
-          v-model="newMessage"
-          @keyup.enter="sendMessage"
-          class="border border-gray-300 w-full p-2"
-          placeholder="Type a message..."
-        />
-      </div>
-    </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
+interface FetchedFriends {
+  id: number,
+  username: string,
+  active: boolean,
+}
+
 // State variables
-const friends = ref([]);
-const activeFriends = ref([]);
-const selectedFriend = ref(null);
-const messages = ref([]);
-const newMessage = ref('');
+const friends = ref<FetchedFriends[]>([]);
+const activeFriends = ref<FetchedFriends[]>([]);
+//const messages = ref([]);
+//const newMessage = ref('');
 
 // Fetch friends data
-const getFriends = async () => {
+const getFriends = async (): Promise <void> => {
   try {
     const response = await axios.get('http://localhost:3000/api/users/friends', {
       withCredentials: true,
     });
-    friends.value = response.data;
+
+    friends.value = response.data as FetchedFriends[];
     activeFriends.value = friends.value.filter((friend) => friend.active === true);
     
   } catch (err) {
@@ -77,19 +63,6 @@ const getFriends = async () => {
   }
 };
 
-// Select a friend
-const selectFriend = (friend) => {
-  selectedFriend.value = friend;
-  messages.value = []; // Clear existing messages when selecting a new friend
-};
-
-// Send a message
-const sendMessage = () => {
-  if (newMessage.value.trim()) {
-    messages.value.push(newMessage.value.trim());
-    newMessage.value = '';
-  }
-};
 
 onMounted(() => {
   getFriends();

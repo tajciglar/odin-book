@@ -11,7 +11,9 @@
       </ul>
     </div>
 
-    <ActiveFriendsBar class="col-span-1 bg-gray-200 overflow-y-auto" />
+    <ActiveFriendsBar @select-friend="selectFriend" class="col-span-1 bg-gray-200 overflow-y-auto" />
+    <ChatBox v-if="selectedFriend"
+      :friend="selectedFriend"/>
   </div>
 </template>
 
@@ -19,15 +21,24 @@
   import { onMounted, ref } from 'vue';
   import Sidebar from '../components/Sidebar.vue';
   import ActiveFriendsBar from '../components/ActiveFriendsBar.vue';
+  import ChatBox from '../components/ChatBox.vue';
   import axios from 'axios';
 
- 
   interface FetchedPosts {
     title: string, 
     content: string,
     user: string
   }
 
+ 
+  const selectedFriend = ref(null);
+  const posts = ref<FetchedPosts[]>([]);
+
+  const selectFriend = (friend: object) => {
+    selectFriend.value = friend;
+  };
+ 
+ 
 
 
 
@@ -40,7 +51,7 @@
       if(!response) {
 
       }
-      const posts: FetchedPosts = response.data;
+      const posts.value = response.data as FetchedPosts;
     } catch (err) {
       console.error(err)
     }
