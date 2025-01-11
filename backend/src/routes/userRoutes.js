@@ -37,6 +37,8 @@ router.post('/update-profile-pic', upload.single('profilePicture'), updateProfil
 // Route for updating bio
 router.post('/update-bio', updateBio);
 
+
+// Getting friends
 router.get('/friends', getFriends);
 
 export default router;

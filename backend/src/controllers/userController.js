@@ -94,21 +94,36 @@ const updateBio = async (req, res) => {
 
 const getFriends = async (req, res) => {
     const { authToken } = req.cookies;
+    console.log( authToken )
 
         if (!authToken) {
             return res.status(401).json({ message: 'Authentication token missing' });
         }
 
         const decodedToken = jwt.verify(authToken, process.env.JWT_SECRET);
+  
         const { id } = decodedToken;
 
     try {
+        console.log("user id: ", id)
+
+        const user = await prisma.user.findUnique({
+            where: {
+                id: id,
+            },
+        })
+        console.log(user)
         const friends = await prisma.user.findUnique({
             where: {
                 id: id,
             },
             select: {
-                friends: true,  
+                friends: {
+                    select: {
+                        username: true,
+                        active: true,
+                    }
+                }
             }
         });
         console.log(friends)

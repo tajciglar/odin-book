@@ -45,15 +45,22 @@ const friends = ref([]);
 const getFriends = async () => {
     try {
         const response = await axios.get(`http://localhost:3000/api/users/friends`, { 
-          withCredentials: true,
+            withCredentials: true,
         });
 
         const friends = response.data.friends;
-        console.log(friends)
+        console.log(friends);
+
+        // Get only friends that are active
+        const activeFriends = friends.filter((friend) => friend.active);
+
+        console.log(activeFriends); 
+        return activeFriends; 
     } catch (err) {
         console.error(err);
     }
-}
+};
+
 
 
 
