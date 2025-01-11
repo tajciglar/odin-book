@@ -105,29 +105,22 @@ const getFriends = async (req, res) => {
         const { id } = decodedToken;
 
     try {
-        console.log("user id: ", id)
-
         const user = await prisma.user.findUnique({
-            where: {
-                id: id,
-            },
-        })
-        console.log(user)
-        const friends = await prisma.user.findUnique({
             where: {
                 id: id,
             },
             select: {
                 friends: {
                     select: {
+                        id: true,
                         username: true,
                         active: true,
                     }
-                }
+                } 
             }
         });
-        console.log(friends)
-        res.status(200).json({friends})
+
+        res.status(200).json(user?.friends || []);
     } catch (err) {
         console.error('There was an error:' ,err);
     }
