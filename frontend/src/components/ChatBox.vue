@@ -1,34 +1,57 @@
 <template>
-    <div 
-      class="fixed bottom-0 right-0 w-1/3 bg-white text-black p-4 shadow-lg rounded-t-lg border border-gray-300  transition-all ease-in-out duration-1000 "
-      :class="{ 'translate-y-0': selectedFriend }"
-      v-if="selectedFriend"
-    >
-      <h3 class="text-lg font-bold">{{ selectedFriend.username }}</h3>
+  <div v-if="friend" class="fixed bottom-4 right-4 w-1/3 max-w-md bg-white text-black p-6 rounded-lg shadow-lg border border-gray-300 transition-transform transform ease-in-out duration-300">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-semibold text-gray-800">{{ friend.username }}</h3>
       <button
         @click="$emit('close-chat')"
-        class="text-red-500 text-sm hover:underline"
+        class="text-red-500 hover:text-red-700 text-sm font-semibold"
       >
         Close
       </button>
-      <div class="border border-gray-300 p-4 h-64 overflow-y-auto">
-        <p v-for="(msg, index) in messages" :key="index">{{ msg }}</p>
-      </div>
-      <div class="mt-4">
-        <input
-          v-model="newMessage"
-          @keyup.enter="sendMessage"
-          class="border border-gray-300 w-full p-2"
-          placeholder="Type a message..."
-        />
-      </div>
     </div>
+
+    <div class="border-t border-gray-200 pt-4">
+      <textarea
+        class="w-full p-4 bg-gray-50 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        rows="4"
+        placeholder="Type your message..."
+        v-model="newMessage"
+      ></textarea>
+    </div>
+
+    <div class="mt-4 flex justify-end">
+      <button
+        @click="sendMessage"
+        class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-200"
+      >
+        Send
+      </button>
+    </div>
+  </div>
 </template>
 
-<script setup>
-  // Select a friend
-const selectFriend = (friend) => {
-  selectedFriend.value = friend;
-  messages.value = []; // Clear existing messages when selecting a new friend
-};
+<script setup lang="ts">
+  import { ref, defineProps } from 'vue';
+  
+  interface Friend {
+    id: number;
+    username: string;
+    active: boolean;
+  }
+
+  defineProps<{ friend: Friend | null }>();
+
+  const newMessage = ref('');
+  
+  const sendMessage = () => {
+    if (newMessage.value.trim()) {
+      console.log('Sending message:', newMessage.value);
+      // Send the message logic here
+      newMessage.value = ''; // Clear the message input after sending
+    }
+  };
 </script>
+
+<style scoped>
+/* Additional custom styles if needed */
+</style>

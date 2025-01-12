@@ -35,6 +35,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 interface FetchedFriends {
   id: number,
@@ -51,7 +52,7 @@ const activeFriends = ref<FetchedFriends[]>([]);
 // Fetch friends data
 const getFriends = async (): Promise <void> => {
   try {
-    const response = await axios.get('http://localhost:3000/api/users/friends', {
+    const response = await axios.get(`${VITE_BACKEND_URL}/api/users/friends`, {
       withCredentials: true,
     });
 

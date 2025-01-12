@@ -126,6 +126,36 @@ async function main() {
         }
 
         console.log("Likes created");
+
+        // Add chats between users and admin
+        for (let i = 0; i < users.length; i++) {
+            const user = users[i];
+
+            // Create chat with the admin and the current user
+            const chat = await prisma.chat.create({
+                data: {
+                    participants: {
+                        create: [
+                            { userId: admin.id },
+                            { userId: user.id },
+                        ],
+                    },
+                    messages: {
+                        create: [
+                            {
+                                content: `Hello ${user.username}!`,
+                                senderId: admin.id,
+                            },
+                        ],
+                    },
+                },
+            });
+
+            console.log(`Chat created between Admin (id: 1) and ${user.username} (id: ${user.id})`);
+        }
+
+        console.log("Chats created");
+
     } catch (error) {
         console.error("Error during seed:", error);
     } finally {

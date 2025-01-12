@@ -12,8 +12,7 @@
     </div>
 
     <ActiveFriendsBar @select-friend="selectFriend" class="col-span-1 bg-gray-200 overflow-y-auto" />
-    <ChatBox v-if="selectedFriend"
-      :friend="selectedFriend"/>
+    <ChatBox v-if="selectedFriend" :friend="selectedFriend"/>
   </div>
 </template>
 
@@ -24,34 +23,40 @@
   import ChatBox from '../components/ChatBox.vue';
   import axios from 'axios';
 
+  const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
   interface FetchedPosts {
     title: string, 
     content: string,
     user: string
   }
 
+  interface Friend {
+    id: number,
+    username: string,
+    active: boolean,
+  }
+
  
-  const selectedFriend = ref(null);
+  const selectedFriend = ref<Friend | null>(null);
   const posts = ref<FetchedPosts[]>([]);
 
-  const selectFriend = (friend: object) => {
-    selectFriend.value = friend;
+  // Get friend that was clicked in friends bar
+  const selectFriend = (friend: Friend) => {
+    selectedFriend.value = friend;
   };
- 
- 
-
-
-
+  
+  // Get posts from friends of the user
   const fetchPosts = async (): Promise<void> => {
     try {
-      const response  = await axios.get(`$(VITE_BACKEND_URL)/api/users/posts`, {
+      const response  = await axios.get(`${VITE_BACKEND_URL}/api/users/posts`, {
         withCredentials: true,
       })
 
       if(!response) {
 
       }
-      const posts.value = response.data as FetchedPosts;
+      posts.value = response.data as FetchedPosts[];
     } catch (err) {
       console.error(err)
     }
