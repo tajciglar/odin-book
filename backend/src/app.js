@@ -7,7 +7,9 @@ import path from 'path';
 
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import chatRoutes from './routes/chatRoutes.js'
 import authenticate from './middleware/authenticate.js';
+
 
 dotenv.config();
 
@@ -31,6 +33,7 @@ app.use('../uploads', express.static(path.resolve('uploads')));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/chats', chatRoutes)
 
 // Define other routes
 app.get('/auth-status', authenticate, (req, res, next) => {

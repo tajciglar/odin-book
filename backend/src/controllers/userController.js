@@ -104,31 +104,32 @@ const getFriends = async (req, res) => {
         const { id } = decodedToken;
 
     try {
-        const user = await prisma.user.findUnique({
+        const userFriends = await prisma.user.findUnique({
             where: {
-                id: id, // current user's id
+                id: id, 
             },
             select: {
                 friends: {
                     select: {
-                        id: true, // friend's id
-                        username: true, // friend's username
-                        active: true, // friend's active status
-                        chats: {
-                            select: {
-                                id: true,
-                            }
-                        },
+                        id: true, 
+                        username: true, 
+                        active: true, 
                     }
                 }
             }
         });
 
-        console.log(user.friends.chats)
-        res.status(200).json(user?.friends || []);
+        const chats = await prisma.chat.findMany({
+
+        })
+
+        console.log(userFriends.friends.chats)
+        res.status(200).json(userFriends?.friends || []);
     } catch (err) {
         console.error('There was an error:' ,err);
     }
 }
+
+
 
 export { getUser, updateProfilePic, updateBio, getFriends };
