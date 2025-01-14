@@ -9,7 +9,7 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  userId    Int      @id @default(autoincrement())
   username  String   @unique
   email     String   @unique
   password  String
@@ -23,87 +23,86 @@ model User {
   comments Comment[]
   messages Message[]         @relation("UserMessages")
   chats    ChatParticipant[]
-
-  likes Like[]
+  likes    Like[]
 
   friends  User[] @relation("UserFriends")
   friendOf User[] @relation("UserFriends")
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
+  postId    Int      @id @default(autoincrement())
   title     String
   content   String
-  imageUrl  String? // Optional image for the post
+  imageUrl  String?
   published Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   authorId Int
-  author   User @relation(fields: [authorId], references: [id])
+  author   User @relation(fields: [authorId], references: [userId])
 
   comments Comment[]
   likes    Like[]
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
+  commentId Int      @id @default(autoincrement())
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   authorId Int
-  author   User @relation(fields: [authorId], references: [id])
+  author   User @relation(fields: [authorId], references: [userId])
 
   postId Int
-  post   Post @relation(fields: [postId], references: [id])
+  post   Post @relation(fields: [postId], references: [postId])
 
   likes Like[]
 }
 
 model Like {
-  id        Int      @id @default(autoincrement())
+  likeId    Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
   userId Int
-  user   User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [userId])
 
   postId Int?
-  post   Post? @relation(fields: [postId], references: [id])
+  post   Post? @relation(fields: [postId], references: [postId])
 
   commentId Int?
-  comment   Comment? @relation(fields: [commentId], references: [id])
+  comment   Comment? @relation(fields: [commentId], references: [commentId])
 }
 
 model Chat {
-  id           Int               @id @default(autoincrement())
+  chatId       Int               @id @default(autoincrement())
   createdAt    DateTime          @default(now())
   messages     Message[]
   participants ChatParticipant[]
 }
 
 model ChatParticipant {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+  chatParticipantId Int      @id @default(autoincrement())
+  createdAt         DateTime @default(now())
 
   userId Int
-  user   User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [userId])
 
   chatId Int
-  chat   Chat @relation(fields: [chatId], references: [id])
+  chat   Chat @relation(fields: [chatId], references: [chatId])
 
   @@unique([userId, chatId])
   @@index([chatId])
 }
 
 model Message {
-  id      Int      @id @default(autoincrement())
-  content String
-  sentAt  DateTime @default(now())
+  messageId Int      @id @default(autoincrement())
+  content   String
+  sentAt    DateTime @default(now())
 
   senderId Int
-  sender   User @relation("UserMessages", fields: [senderId], references: [id])
+  sender   User @relation("UserMessages", fields: [senderId], references: [userId])
 
   chatId Int
-  chat   Chat @relation(fields: [chatId], references: [id])
+  chat   Chat @relation(fields: [chatId], references: [chatId])
 }

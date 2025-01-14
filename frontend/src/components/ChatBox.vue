@@ -77,7 +77,9 @@ const fetchMessages = async (friendId: number): Promise <void> => {
       params: { friendId },
       withCredentials: true,
     });
+    console.log(response.data)
     messages.value = response.data as Message[];
+    console.log(messages.value)
   } catch (err) {
     console.error('Error fetching messages:', err);
   }

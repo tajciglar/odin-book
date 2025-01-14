@@ -18,8 +18,8 @@ const getMessages = async (req, res) => {
         const messages = await prisma.chat.findFirst({
             where: {
                 participants: {
-                    some: { id: id }, // The logged-in user should be a participant
-                    some: { id: Number(friendId) }, // The friend should be a participant
+                    some: { userId: id }, // The logged-in user should be a participant
+                    some: { userId: Number(friendId) }, // The friend should be a participant
                 },
             },
             include: {
@@ -28,8 +28,13 @@ const getMessages = async (req, res) => {
                 },
             },
         });
-
         console.log(messages)
+        if(!messages){
+            return res.status(201).json({ message: "No previous messages"})
+        }
+
+        return res.status(201).json({ messages })
+
     } catch (err) {
         console.error(err)
     }

@@ -4,9 +4,16 @@
 
     <div class="col-span-1 p-6 overflow-y-auto h-full">
       <ul>
-        <li v-for="(post, index) in posts" :key="index" class="mb-6 border-b pb-4">
-          <h3 class="text-xl font-semibold text-gray-800">{{ post.title }}</h3>
-          <p class="text-gray-600">{{ post.content }}</p>
+        <li v-for="(post, index) in posts" :key="index" class="mb-6 border-b border-cyan-300 pb-4">
+          <div>
+            <div class="flex justify-end">
+              {{ post.author.username }}
+            </div>
+            <div class="flex flex-col items-start">
+              <h3 class="text-xl font-semibold text-gray-800">{{ post.title }}</h3>
+              <p class="text-gray-600">{{ post.content }}</p>
+            </div>
+          </div>
         </li>
       </ul>
     </div>
@@ -25,10 +32,16 @@
 
   const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
+  interface Author {
+    id: number,
+    username: string,
+  }
   interface FetchedPosts {
     title: string, 
     content: string,
-    user: string
+    user: string,
+    createdAt: string,
+    author: Author,
   }
 
   interface Friend {
@@ -46,16 +59,13 @@
     selectedFriend.value = friend;
   };
   
-  // Get posts from friends of the user
+  // Get posts 
   const fetchPosts = async (): Promise<void> => {
     try {
-      const response  = await axios.get(`${VITE_BACKEND_URL}/api/users/posts`, {
+      const response  = await axios.get(`${VITE_BACKEND_URL}/api/posts`, {
         withCredentials: true,
       })
-
-      if(!response) {
-
-      }
+      console.log(response.data)
       posts.value = response.data as FetchedPosts[];
     } catch (err) {
       console.error(err)

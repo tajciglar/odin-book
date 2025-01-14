@@ -7,7 +7,9 @@ import path from 'path';
 
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
-import chatRoutes from './routes/chatRoutes.js'
+import chatRoutes from './routes/chatRoutes.js';
+import postRoutes from './routes/postRoutes.js'
+
 import authenticate from './middleware/authenticate.js';
 
 
@@ -34,6 +36,7 @@ app.use('../uploads', express.static(path.resolve('uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/chats', chatRoutes)
+app.use('/api/posts', postRoutes)
 
 // Define other routes
 app.get('/auth-status', authenticate, (req, res, next) => {

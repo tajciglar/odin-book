@@ -18,7 +18,7 @@ const getUser = async (req, res) => {
 
         const userData = await prisma.user.findUnique({
             where: {
-                id: id,
+                userId: id,
             },
             select: {
                 username: true,
@@ -81,7 +81,7 @@ const updateBio = async (req, res) => {
     try {
         
         const updatedUser = await prisma.user.update({
-            where: { id: id }, // You will need to extract user ID from JWT or session
+            where: { userId: id }, // You will need to extract user ID from JWT or session
             data: { bio: bio },
         });
 
@@ -106,12 +106,12 @@ const getFriends = async (req, res) => {
     try {
         const userFriends = await prisma.user.findUnique({
             where: {
-                id: id, 
+                userId: id, 
             },
             select: {
                 friends: {
                     select: {
-                        id: true, 
+                        userId: true, 
                         username: true, 
                         active: true, 
                     }
@@ -119,11 +119,7 @@ const getFriends = async (req, res) => {
             }
         });
 
-        const chats = await prisma.chat.findMany({
-
-        })
-
-        console.log(userFriends.friends.chats)
+        console.log("user friends",userFriends.friends.chats)
         res.status(200).json(userFriends?.friends || []);
     } catch (err) {
         console.error('There was an error:' ,err);

@@ -62,7 +62,7 @@ async function SignUp(req, res) {
         
         return res.status(201).json({
             message: 'User created successfully',
-            user: { id: newUser.id, email: newUser.email }, 
+            user: { id: newUser.userId, email: newUser.email }, 
         });
     } catch (error) {
         console.error('Error creating user:', error);
@@ -96,7 +96,7 @@ async function LogIn(req, res) {
         }
 
         // Return a success response + generate token
-        const token = jwt.sign({id: user.id, username: user.username}, jwtSecret, { expiresIn: '1h' });
+        const token = jwt.sign({id: user.userId, username: user.username}, jwtSecret, { expiresIn: '1h' });
 
         // set token in cookie
         res.cookie('authToken', token, {

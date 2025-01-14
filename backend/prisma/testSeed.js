@@ -27,7 +27,7 @@ async function main() {
                 data: {
                     username: faker.internet.userName(),
                     email: faker.internet.email(),
-                    password: faker.internet.password(),
+                    password: await bcrypt.hash(faker.internet.password(), 10),
                     bio: faker.lorem.sentence(),
                     avatarUrl: faker.image.avatar(),
                     active: i % 2 === 0,
@@ -38,15 +38,15 @@ async function main() {
 
         console.log("Users created:", users.length);
 
-        // Make users friends with each other and with Admin
-        for (let i = 0; i < users.length; i++) {
-            const user = users[i];
-            const otherUsers = users.filter(u => u.id !== user.id);
+        // Make all users friends with the admin and each other
+        for (const user of users) {
+            // Connect each user with all other users and the admin
+            const otherUsers = users.filter(u => u.userId !== user.userId);
             await prisma.user.update({
-                where: { id: user.id },
+                where: { userId: user.userId },
                 data: {
                     friends: {
-                        connect: otherUsers.map(u => ({ id: u.id })).concat({ id: admin.id }),
+                        connect: otherUsers.map(u => ({ userId: u.userId })).concat({ userId: admin.userId }),
                     },
                 },
             });
@@ -54,108 +54,110 @@ async function main() {
 
         // Make Admin friends with all users
         await prisma.user.update({
-            where: { id: admin.id },
+            where: { userId: admin.userId },
             data: {
                 friends: {
-                    connect: users.map(user => ({ id: user.id })),
+                    connect: users.map(user => ({ userId: user.userId })),
                 },
             },
         });
 
         console.log("Friendships created");
 
-        // Add 5 posts for each user (including admin)
+        // Create posts for each user (including admin)
         const allUsers = [admin, ...users];
+        const posts = [];
         for (const user of allUsers) {
-            for (let i = 0; i < 5; i++) {
-                await prisma.post.create({
+            for (let i = 0; i < 3; i++) {
+                const post = await prisma.post.create({
                     data: {
                         title: faker.lorem.words(5),
                         content: faker.lorem.paragraph(),
                         imageUrl: faker.image.imageUrl(),
-                        author: { connect: { id: user.id } },
+                        author: { connect: { userId: user.userId } },
                         published: faker.datatype.boolean(),
                     },
                 });
+                posts.push(post);
             }
         }
+        console.log("Posts created:", posts.length);
 
-        console.log("Posts created");
-
-        // Add random comments to posts
-        const posts = await prisma.post.findMany();
+        // Add comments to posts
+        const comments = [];
         for (const post of posts) {
             const randomUsers = users.sort(() => 0.5 - Math.random()).slice(0, 3);
             for (const user of randomUsers) {
-                await prisma.comment.create({
+                const comment = await prisma.comment.create({
                     data: {
                         content: faker.lorem.sentence(),
-                        author: { connect: { id: user.id } },
-                        post: { connect: { id: post.id } },
+                        author: { connect: { userId: user.userId } },
+                        post: { connect: { postId: post.postId } },
                     },
                 });
+                comments.push(comment);
             }
         }
+        console.log("Comments created:", comments.length);
 
-        console.log("Comments created");
-
-        // Add random likes to posts and comments
-        const comments = await prisma.comment.findMany();
+        // Add likes to posts and comments
+        const likes = [];
         for (const post of posts) {
             const randomUsers = users.sort(() => 0.5 - Math.random()).slice(0, 3);
             for (const user of randomUsers) {
-                await prisma.like.create({
+                const like = await prisma.like.create({
                     data: {
-                        user: { connect: { id: user.id } },
-                        post: { connect: { id: post.id } },
+                        user: { connect: { userId: user.userId } },
+                        post: { connect: { postId: post.postId } },
                     },
                 });
+                likes.push(like);
             }
         }
 
         for (const comment of comments) {
             const randomUsers = users.sort(() => 0.5 - Math.random()).slice(0, 2);
             for (const user of randomUsers) {
-                await prisma.like.create({
+                const like = await prisma.like.create({
                     data: {
-                        user: { connect: { id: user.id } },
-                        comment: { connect: { id: comment.id } },
+                        user: { connect: { userId: user.userId } },
+                        comment: { connect: { commentId: comment.commentId } },
                     },
                 });
+                likes.push(like);
             }
         }
+        console.log("Likes created:", likes.length);
 
-        console.log("Likes created");
-
-        // Add chats between users and admin
-        for (let i = 0; i < users.length; i++) {
-            const user = users[i];
-
-            // Create chat with the admin and the current user
+        // Create chats and messages between users and the admin
+        for (const user of users) {
             const chat = await prisma.chat.create({
                 data: {
                     participants: {
                         create: [
-                            { userId: admin.id },
-                            { userId: user.id },
+                            { userId: admin.userId },
+                            { userId: user.userId },
                         ],
                     },
                     messages: {
                         create: [
                             {
-                                content: `Hello ${user.username}!`,
-                                senderId: admin.id,
+                                content: `Hi Admin, this is ${user.username}!`,
+                                senderId: user.userId,
+                            },
+                            {
+                                content: `Hello ${user.username}! How can I help you?`,
+                                senderId: admin.userId,
                             },
                         ],
                     },
                 },
             });
 
-            console.log(`Chat created between Admin (id: 1) and ${user.username} (id: ${user.id})`);
+            console.log(`Chat created between Admin (id: ${admin.userId}) and ${user.username} (id: ${user.userId})`);
         }
 
-        console.log("Chats created");
-
+        console.log("Chats and messages created");
     } catch (error) {
         console.error("Error during seed:", error);
     } finally {
