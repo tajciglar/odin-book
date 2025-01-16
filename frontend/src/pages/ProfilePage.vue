@@ -1,10 +1,10 @@
 <template>
-  <div class=" mx-auto p-6 bg-white shadow-md rounded-lg space-y-8 w-3/6">
+  <div class="mx-auto p-6 bg-white shadow-md rounded-lg space-y-8 w-3/6">
     <div class="space-y-4">
       <h2 class="text-lg font-bold">Profile Picture</h2>
       <div class="flex items-center space-x-4">
         <img
-          :src="userInfo.profilePicture || 'https://via.placeholder.com/150'"
+          :src="userStore.user?.avatarUrl || 'https://via.placeholder.com/150'"
           class="w-24 h-24 rounded-full object-cover border"
           alt="Profile Picture"
           v-if="!editingProfilePic"
@@ -12,7 +12,7 @@
 
         <div v-else class="flex items-center space-x-4">
           <img
-            :src="userInfo.profilePicture || 'https://via.placeholder.com/150'"
+            :src="userStore.user?.avatarUrl || 'https://via.placeholder.com/150'"
             class="w-24 h-24 rounded-full object-cover border"
             alt="Profile Picture"
           />
@@ -24,7 +24,7 @@
             />
             <button
               type="submit"
-              class="px-4 py-2  bg-blue-500 text-white rounded hover:bg-blue-600"
+              class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
               Submit
             </button>
@@ -49,11 +49,11 @@
         </button>
       </div>
     </div>
-    
+
     <div class="space-y-4">
       <h2 class="text-lg font-bold">Bio</h2>
-      <div v-if="!editingBio" >
-        <p class="text-gray-700 m-5">{{ userInfo.bio || "No bio available." }}</p>
+      <div v-if="!editingBio">
+        <p class="text-gray-700 m-5">{{ userStore.user?.bio || "No bio available." }}</p>
         <button
           type="button"
           class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
@@ -88,89 +88,77 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import { useUserStore } from "../stores/userStore";
 
-const userInfo = ref({
-  profilePicture: "",
-  profilePictureFile: "",
-  bio: "",
-});
-const editingProfilePic = ref(false);
-const editingBio = ref(false);
-const newBio = ref("");
+const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const userStore = useUserStore();
 
-const fetchUserData = async () => {
-  try {
-    const response = await axios.get("http://localhost:3000/api/users/profile", {
-      withCredentials: true,
-    });
-    console.log(response.data)
-    userInfo.value = response.data.userData;
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-  }
-};
+const editingProfilePic = ref<boolean>(false);
+const editingBio = ref<boolean>(false);
+const newBio = ref<string>("");
 
-const toggleEdit = (field) => {
+// Toggle edit mode for profile picture and bio
+const toggleEdit = (field: "profilePic" | "bio"): void => {
   if (field === "profilePic") {
     editingProfilePic.value = !editingProfilePic.value;
   } else if (field === "bio") {
     editingBio.value = !editingBio.value;
-    newBio.value = userInfo.value.bio;
+    newBio.value = userStore.user?.bio || "";  // Initialize with current bio
   }
 };
 
-const handleProfilePicChange = (event) => {
-  const file = event.target.files[0];
+// Handle file input for profile picture change
+const handleProfilePicChange = (event: Event): void => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
   if (file) {
-    userInfo.value.profilePicture = URL.createObjectURL(file);
-    userInfo.value.profilePictureFile = file;
+    userStore.user!.avatarUrl = URL.createObjectURL(file);  
+    userStore.user!.profilePictureFile = file;  // Store the file
   }
 };
 
-const submitProfilePic = async () => {
+// Submit the profile picture change
+const submitProfilePic = async (): Promise<void> => {
   try {
     const formData = new FormData();
-    formData.append("profilePicture", userInfo.value.profilePictureFile);
+    if (userStore.user?.profilePictureFile) {
+      formData.append("profilePicture", userStore.user.profilePictureFile);
+    }
 
     await axios.post(
-      "http://localhost:3000/api/users/update-profile-pic",
+      `${VITE_BACKEND_URL}/api/users/update-profile-pic`,
       formData,
-      {
-        withCredentials: true,
-      }
+      { withCredentials: true }
     );
 
     editingProfilePic.value = false;
+    userStore.fetchUser();  // Fetch the updated user data after successful update
   } catch (error) {
     console.error("Error updating profile picture:", error);
   }
 };
 
-const submitBio = async () => {
+// Submit the bio change
+const submitBio = async (): Promise<void> => {
   try {
     await axios.post(
-      "http://localhost:3000/api/users/update-bio",
+      `${VITE_BACKEND_URL}/api/users/update-bio`,
       { bio: newBio.value },
-      {
-        withCredentials: true,
-      }
+      { withCredentials: true }
     );
 
-    userInfo.value.bio = newBio.value;
+    userStore.user!.bio = newBio.value;  // Update the bio in the store
     editingBio.value = false;
   } catch (error) {
     console.error("Error updating bio:", error);
   }
 };
 
+// Fetch user data when component is mounted
 onMounted(() => {
-  fetchUserData();
+  userStore.fetchUser();
 });
 </script>
-
-<style scoped>
-
-</style>

@@ -4,7 +4,7 @@
 
     <div class="col-span-1 p-6 overflow-y-auto h-full">
       <ul>
-        <li v-for="(post, index) in posts" :key="index" class="mb-6 border-b border-cyan-300 pb-4">
+        <li v-for="(post, index) in posts" :key="index" class="mb-6 border-b border-gray-300 pb-4">
           <div>
             <div class="flex justify-end">
               {{ post.author.username }}

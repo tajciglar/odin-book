@@ -98,7 +98,7 @@ async function LogIn(req, res) {
         // Return a success response + generate token
         const token = jwt.sign({id: user.userId, username: user.username}, jwtSecret, { expiresIn: '1h' });
 
-        // set token in cookie
+        // set token in a cookie
         res.cookie('authToken', token, {
             httpOnly: true,
             secure: false,

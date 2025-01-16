@@ -2,6 +2,7 @@ import express from 'express';
 import { getUser, updateProfilePic, updateBio, getFriends } from '../controllers/userController.js';
 import multer from 'multer';
 import path from 'path';
+import authenticate from '../middleware/authenticate.js';
 const router = express.Router();
 
 // File upload settings
@@ -29,7 +30,7 @@ const upload = multer({
 
 
 // Route for getting user data
-router.get('/profile', getUser);
+router.get('/', authenticate, getUser);
 
 // Route for updating profile picture
 router.post('/update-profile-pic', upload.single('profilePicture'), updateProfilePic);
