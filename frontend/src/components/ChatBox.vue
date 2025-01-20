@@ -1,5 +1,5 @@
 <template>
-  <div v-if="friend" class="fixed bottom-4 right-4 w-1/3 max-w-md bg-white text-black p-6 rounded-lg shadow-lg border border-gray-300 transition-transform transform ease-in-out duration-300">
+  <div v-if="friend" :key="chat.chatId" class="fixed bottom-4 right-4 w-1/3 max-w-md bg-white text-black p-6 rounded-lg shadow-lg border border-gray-300 transition-transform transform ease-in-out duration-300">
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-xl font-semibold text-gray-800">{{ friend.username }}</h3>
       <button
@@ -11,11 +11,11 @@
     </div>
 
     <div class="border-t border-gray-200 pt-4 h-64 overflow-y-auto">
-      <div v-for="message in messages" :key="message.id" class="mb-4">
-        <p :class="message.senderId === friend.id ? 'text-right' : 'text-left'">
+      <div v-for="message in chat.messages" :key="message.messageId" class="mb-4">
+        <p :class="message.senderId !== friend.userId ? 'text-right' : 'text-left'">
           <span
             class="inline-block px-4 py-2 rounded-lg"
-            :class="message.senderId === friend.id ? 'bg-gray-100 text-gray-800' : 'bg-blue-600 text-white'"
+            :class="message.senderId !== friend.userId ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800'"
           >
             {{ message.content }}
           </span>
@@ -49,49 +49,83 @@
 <script setup lang="ts">
 import { ref, defineProps, watchEffect, toRefs } from 'vue';
 import axios from 'axios';
+import { useUserStore } from '../stores/userStore';
+const userStore = useUserStore();
 
 const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 interface Friend {
-  id: number;
+  userId: number;
   username: string;
   active: boolean;
 }
 
 interface Message {
-  id: number;
+  messageId: number;
   content: string;
-  senderId: number;
   sentAt: string;
+  senderId: number;
+  chatId: number;
+}
+
+interface Chat {
+  chatId: number;
+  createdAt: string;
+  messages: Message[];
 }
 
 const props = defineProps<{ friend: Friend | null }>();
 const { friend } = toRefs(props);
-const messages = ref<Message[]>([]);
+const chat = ref<Chat>({
+  chatId: 0,
+  createdAt: '',
+  messages: [],
+});
+
 const newMessage = ref('');
 
-// Function to fetch messages between the current user and the friend
-const fetchMessages = async (friendId: number): Promise <void> => {
+const fetchMessages = async (friendId: number): Promise<void> => {
   try {
     const response = await axios.get(`${VITE_BACKEND_URL}/api/chats`, {
       params: { friendId },
       withCredentials: true,
     });
-    console.log(response.data)
-    messages.value = response.data as Message[];
-    console.log(messages.value)
+
+    chat.value = response.data as Chat;
   } catch (err) {
     console.error('Error fetching messages:', err);
   }
 };
 
+const sendMessage = async (): Promise<void> => {
+  if (!newMessage.value.trim()) return;
 
+  const senderId = userStore.user?.userId;
+  if (senderId === undefined) {
+    console.error('Sender ID is undefined');
+    return;
+  }
 
+  try {
+    const response = await axios.post(
+      `${VITE_BACKEND_URL}/api/chats/send`,
+      { chatId: chat.value.chatId, content: newMessage.value, sentAt: new Date().toISOString(), friendId: friend.value?.userId },
+      { withCredentials: true }
+    );
 
-// Watch for friend prop changes and fetch messages
+    const newMessageData = response.data as Message;
+    console.log(newMessageData)
+    chat.value.messages.push(newMessageData);
+
+    newMessage.value = '';
+  } catch (err) {
+    console.error('Error sending message:', err);
+  }
+};
+
 watchEffect(() => {
   if (friend.value) {
-    fetchMessages(friend.value.id); // Fetch messages when the friend changes
+    fetchMessages(friend.value.userId);
   }
 });
 </script>

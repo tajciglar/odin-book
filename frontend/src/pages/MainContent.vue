@@ -19,7 +19,7 @@
     </div>
 
     <ActiveFriendsBar @select-friend="selectFriend" class="col-span-1 bg-gray-200 overflow-y-auto" />
-    <ChatBox v-if="selectedFriend" :friend="selectedFriend"/>
+    <ChatBox v-if="selectedFriend" :friend="selectedFriend" @close-chat="closeChat"/>
   </div>
 </template>
 
@@ -45,7 +45,7 @@
   }
 
   interface Friend {
-    id: number,
+    userId: number,
     username: string,
     active: boolean,
   }
@@ -54,18 +54,18 @@
   const selectedFriend = ref<Friend | null>(null);
   const posts = ref<FetchedPosts[]>([]);
 
-  // Get friend that was clicked in friends bar
   const selectFriend = (friend: Friend) => {
     selectedFriend.value = friend;
   };
   
-  // Get posts 
+  const closeChat = () => {
+    selectedFriend.value = null;
+  }
   const fetchPosts = async (): Promise<void> => {
     try {
       const response  = await axios.get(`${VITE_BACKEND_URL}/api/posts`, {
         withCredentials: true,
       })
-      console.log(response.data)
       posts.value = response.data as FetchedPosts[];
     } catch (err) {
       console.error(err)

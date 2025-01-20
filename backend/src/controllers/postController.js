@@ -5,7 +5,6 @@ const prisma = new PrismaClient();
 const getPosts = async (req, res) => {
 
     const userId = req.user.id;
-    console.log(userId)
 
     try {
         const posts = await prisma.post.findMany({

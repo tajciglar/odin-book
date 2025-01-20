@@ -12,13 +12,8 @@ const getUser = async (req, res) => {
             where: {
                 userId: id,
             },
-            select: {
-                username: true,
-                bio: true,
-                avatarUrl: true,
-            },
         });
-
+        console.log(userData)
         if (!userData) {
             return res.status(404).json({ message: 'User not found' });
         }

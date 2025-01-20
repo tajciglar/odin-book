@@ -120,7 +120,6 @@ const handleProfilePicChange = (event: Event): void => {
   }
 };
 
-// Submit the profile picture change
 const submitProfilePic = async (): Promise<void> => {
   try {
     const formData = new FormData();
@@ -135,7 +134,7 @@ const submitProfilePic = async (): Promise<void> => {
     );
 
     editingProfilePic.value = false;
-    userStore.fetchUser();  // Fetch the updated user data after successful update
+    userStore.fetchUser();  
   } catch (error) {
     console.error("Error updating profile picture:", error);
   }
@@ -150,7 +149,7 @@ const submitBio = async (): Promise<void> => {
       { withCredentials: true }
     );
 
-    userStore.user!.bio = newBio.value;  // Update the bio in the store
+    userStore.user!.bio = newBio.value;  
     editingBio.value = false;
   } catch (error) {
     console.error("Error updating bio:", error);
